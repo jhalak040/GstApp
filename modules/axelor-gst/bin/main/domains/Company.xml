@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain-models xmlns="http://axelor.com/xml/ns/domain-models"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/domain-models
+  http://axelor.com/xml/ns/domain-models/domain-models_5.0.xsd">
+	<module name="gst" package="com.axelor.gst.db" />
+
+	<entity name="Company" cachable="true">
+		<string name="name" title="Name" required="true" />
+		<binary name="image" title="logo" help="Max size 4MB." image="true"	 />
+		<one-to-many name="contact"  title="Contact" ref="Contact"  />
+		<string name="gstin" title="GSTIN" min="15" max="15"  />
+		<one-to-many name="bankdetails" title="Bank Details" ref="BankAccount"  />
+        <many-to-one name="addresses" title="Address" ref="Address"  />
+	</entity>
+
+</domain-models>

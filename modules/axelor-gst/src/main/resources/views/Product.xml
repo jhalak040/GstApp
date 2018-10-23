@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/object-views
+  http://axelor.com/xml/ns/object-views/object-views_5.0.xsd">
+
+	<grid model="com.axelor.gst.db.Product" title="Product" name="product-grid">
+		<toolbar>
+			<button name="createInvoice" title="Create Invoice"
+				onClick="action-gst-method-generate-invoice-on-product" />
+			<button name="printproduct" title="Print Product" onClick="action-gst-group-onclick" />
+		</toolbar>
+		<field name="name" />
+		<field name="hsbn" />
+		<field name="category" />
+		<field name="saleprice" />
+		<field name="costprice" />
+		<field name="gstrate" />
+	</grid>
+
+	<form model="com.axelor.gst.db.Product" title="Product" name="product-form">
+		<panel>
+			<panel colSpan="3">
+				<field name="image" showTitle="false" colSpan="12" widget="image" />
+			</panel>
+			<field name="name" />
+			<field name="code" x-bind="{{code|unaccent|uppercase}}" />
+			<field name="hsbn" />
+			<field name="category" onChange="action-gst-method-productCategory" />
+			<field name="saleprice" />
+			<field name="costprice" />
+			<field name="gstrate" />
+		</panel>
+	</form>
+
+	<cards name="product-card" title="Products" model="com.axelor.gst.db.Product">
+		<field name="image" colSpan="12" widget="image" />
+		<field name="name" />
+		<field name="hsbn" />
+		<field name="category" />
+		<field name="saleprice" />
+		<field name="costprice" />
+		<field name="gstrate" />
+		<template><![CDATA[  
+					<div class="span14">
+					<img ng-show="image" ng-src="{{$image('image', 'content')}}" />
+					<strong>   {{name}} <br> {{hsbn}} <br> </strong><br>
+					</div>
+			         <div class="span8">
+					 <strong> {{category.name}}   </strong>
+					 <span>{{('salePrice')}} </span>
+					 </div>
+					]]>
+		 </template>
+	</cards>
+
+	<action-group name="action-gst-group-onclick">
+		<action name="action-gst-method-generate-report" />
+		<action name="action-gst-method-image-path" />
+		<action name="action-gst-report-Product-Report" />
+	</action-group>
+
+	<action-method name="action-gst-method-productCategory">
+		<call class="com.axelor.app.gst.web.GstController" method="productCategory" />
+	</action-method>
+
+	<action-method name="action-gst-method-generate-invoice-on-product">
+		<call class="com.axelor.app.gst.web.InvoiceGstController" method="invoiceCreate" />
+	</action-method>
+
+	<action-method name="action-gst-method-generate-report">
+		<call class="com.axelor.app.gst.web.InvoiceGstController" method="generateReport" />
+	</action-method>
+
+	<action-method name="action-gst-method-image-path">
+		<call class="com.axelor.app.gst.web.InvoiceGstController" method="path" />
+	</action-method>
+
+	<action-report name="action-gst-report-Product-Report"
+		design="ProductReport.rptdesign" output="design-${date}${time}"
+		format="pdf">
+		<param name="ids" expr="eval: ids" />
+		<param name="img" expr="eval:img" />
+	</action-report>
+
+</object-views>

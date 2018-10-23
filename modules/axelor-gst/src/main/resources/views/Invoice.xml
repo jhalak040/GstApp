@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/object-views
+  http://axelor.com/xml/ns/object-views/object-views_5.0.xsd">
+
+	<grid model="com.axelor.gst.db.Invoice" name="invoice-grid" title="Invoice">
+		<field name="status" />
+		<field name="company" />
+		<field name="reference" />
+		<field name="invoicedate" />
+		<field name="priority" />
+		<field name="party" />
+		<field name="partyContact" />
+		<field name="invoiceAddress" />
+		<field name="shippingAddress" />
+		<field name="useInvoiceAddress" />
+		<field name="netAmmount" />
+		<field name="netIGST" />
+		<field name="netCGST" />
+		<field name="netSGST" />
+		<field name="grossAmmount" />
+		<field name="invoiceItems" />
+	</grid>
+
+	<form model="com.axelor.gst.db.Invoice" title="Invoice" name="invoice-form"
+		onNew="action-gst-group-onNew,action-attrs-createInvoice">
+		<toolbar>
+			<button name="Print" title="Print" onClick="action-gst-report-form"
+				hideIf="status == 'draft'" />
+		</toolbar>
+		<panel name="Status" colSpan="10">
+			<field name="status" colspan="5" />
+		</panel>
+
+		<panel sidebar="true" colSpan="5">
+			<button name="validateStatus" title="VALIDATE" showIf="status == 'draft'"
+				onClick="action-gst-record-status-validate,action-gst-method-reference,save" />
+			<button name="paidSatus" onClick="action-gst-record-status-paid,save"
+				title="PAID" showIf=" status == 'validate'" />
+			<button name="cancelStatus" onClick="action-gst-record-status-canceled,save"
+				title="CANCELED" showIf=" status == 'validate'" />
+		</panel>
+
+		<panel colSpan="10" readonlyIf="status == 'validate'">
+			<field name="reference" colSpan="5" />
+			<field name="company" colSpan="10" />
+			<field name="invoicedate" colSpan="6" />
+			<field name="priority" colSpan="3" />
+			<field name="party" colSpan="6" onChange="action-gst-group-party" />
+			<field name="partyContact" colSpan="5" />
+		</panel>
+
+		<panel title="Address" colSpan="10">
+			<field name="invoiceAddress" colSpan="6"
+				onChange="action-gst-record-invoice-party-address">
+				<viewer><![CDATA[
+                                 <invocieaddress>
+							        {{record.type}}<br>
+							        {{record.line1}}  {{record.line2}}<br>
+							        {{record.city1.name}} {{record.state.name}} <br> 
+							        {{record.pinCode}}   {{record.country.name}}
+							     </invocieaddress>			
+               ]]> </viewer>
+				<editor x-show-titles="false">
+					<field name="type" />
+					<field name="line1" />
+					<field name="line2" />
+					<field name="city1" />
+					<field name="state" />
+					<field name="country" />
+					<field name="pinCode" />
+				</editor>
+			</field>
+			<field name="shippingAddress" colSpan="6"
+				onChange="action-gst-record-shipping-party-address">
+				<viewer><![CDATA[
+						        <shipping_address>
+						        {{record.type}}<br>
+						        {{record.line1}}  {{record.line2}}<br>
+						        {{record.city1.name}} {{record.state.name}} <br> 
+						        {{record.pinCode}}   {{record.country.name}}
+						         </shipping_address> 
+                  ]]> </viewer>
+				<editor x-show-titles="false">
+					<field name="type" colSpan="6" />
+					<field name="line1" colSpan="6" />
+					<field name="line2" colSpan="6" />
+					<field name="city1" colSpan="6" />
+					<field name="state" colSpan="6" />
+					<field name="country" colSpan="6" />
+					<field name="pinCode" colSpan="6" />
+				</editor>
+			</field>
+			<field name="useInvoiceAddress" onChange="action-gst-attrs-useInvoiceAddress"></field>
+		</panel>
+		<panel title="InvoiceItems" colSpan="30" itemSpan="6">
+			<field name="invoiceItems" colSpan="20"
+				onChange="action-gst-method-calculateInvoice" />
+		</panel>
+		<panel colSpan="15" sidebar="true">
+			<field name="netAmmount" />
+			<field name="netIGST" />
+			<field name="netCGST" />
+			<field name="netSGST" />
+			<field name="grossAmmount" />
+		</panel>
+	</form>
+
+	<kanban name="invoice-kanban" sequenceBy="priority"
+		model="com.axelor.gst.db.Invoice" columnBy="status" title="Invoices"
+		draggable="false">
+		<field name="company" />
+		<field name="reference" />
+		<field name="dates" />
+		<field name="party" />
+		<field name="partyContact" />
+		<field name="netAmount" />
+		<field name="grossAmount" />
+		<field name="status" />
+		<hilite color="danger" if="status == 'Cancelled'" />
+		<hilite color="success" if="status == 'Paid'" />
+		<hilite color="warning" if="status == 'Validated'" />
+		<hilite color="info" if="status == 'Draft'" />
+		<template><![CDATA[
+				<div>
+				<b>Company:</b> {{company.name}}<br>
+				<b>Reference:</b> {{reference}}<br>
+				<b>Party: {{party.name}}</b><br>
+				<b>PartyContact:</b> {{partyContact.name}}<br>
+				<b>Date:</b> {{dates}}<br>
+				<b>Net Amount:</b> {{netAmount}}<br>
+				<b>Gross Amount:</b> {{grossAmount}}<br>
+				</div>	
+				]]></template>
+	</kanban>
+	<action-group name="action-gst-group-party">
+		<action name="action-gst-record-contact" />
+		<action name="action-gst-record-invoice-address" />
+		<action name="action-gst-record-shipping-address" />
+	</action-group>
+
+	<action-group name="action-gst-group-onNew">
+		<action name="action-gst-record-default-date" />
+		<action name="action-gst-record-default-status" />
+	</action-group>
+
+	<action-method name="action-gst-method-calculateInvoice">
+		<call class="com.axelor.app.gst.web.InvoiceGstController" method="calculateInvoice" />
+	</action-method>
+
+	<action-method name="action-gst-method-reference">
+		<call class="com.axelor.app.gst.web.GstController" method="referenceForInvoice" />
+	</action-method>
+
+	<action-record name="action-gst-record-default-date"
+		model="com.axelor.gst.db.Invoice">
+		<field name="invoicedate" expr="eval: __datetime__" />
+	</action-record>
+	<!-- method for status -->
+	<action-record name="action-gst-record-default-status"
+		model="com.axelor.gst.db.Invoice">
+		<field name="status" expr="draft" />
+	</action-record>
+
+	<action-record name="action-gst-record-status-validate"
+		model="com.axelor.gst.db.Invoice">
+		<field name="status" expr="validate" />
+	</action-record>
+
+	<action-record name="action-gst-record-status-paid"
+		model="com.axelor.gst.db.Invoice">
+		<field name="status" expr="Paid" />
+	</action-record>
+
+	<action-record name="action-gst-record-status-canceled"
+		model="com.axelor.gst.db.Invoice">
+		<field name="status" expr="canceled" />
+	</action-record>
+
+	<action-record name="action-gst-record-contact" model="com.axelor.gst.db.Invoice">
+		<field name="partyContact"
+			expr="call:com.axelor.app.gst.service.InvoiceServiceImpl:setValues(party)" />
+	</action-record>
+
+	<action-record name="action-gst-record-invoice-address"
+		model="com.axelor.gst.db.Invoice">
+		<field name="invoiceAddress"
+			expr="call:com.axelor.app.gst.service.InvoiceServiceImpl:setInvoiceAddress(party)" />
+	</action-record>
+
+	<action-record name="action-gst-record-shipping-address"
+		model="com.axelor.gst.db.Invoice">
+		<field name="shippingAddress"
+			expr="call:com.axelor.app.gst.service.InvoiceServiceImpl:setShippingAddress(party)" />
+	</action-record>
+
+	<action-record name="action-gst-record-shipping-party-address"
+		model="com.axelor.gst.db.Invoice">
+		<field name="shippingAddress"
+			expr="call:com.axelor.app.gst.service.InvoiceServiceImpl:partyShippingAddress(shippingAddress,party)" />
+	</action-record>
+
+	<action-record name="action-gst-record-invoice-party-address"
+		model="com.axelor.gst.db.Invoice">
+		<field name="invoiceAddress"
+			expr="call:com.axelor.app.gst.service.InvoiceServiceImpl:partyInvoiceAddress(invoiceAddress,party)" />
+	</action-record>
+
+	<!-- <action-method name="invoiceShippingAddress" model="com.axelor.gst.db.Invoice"> 
+		<call class="com.axelor.app.gst.service.InvoiceServiceImpl" method="invoiceShippingAddress(shippingAddress,invoiceAddress)" 
+		/> </action-method> -->
+
+	<action-attrs name="action-gst-attrs-useInvoiceAddress">
+		<attribute name="hidden" for="shippingAddress" expr="useInvoiceAddress == true " />
+	</action-attrs>
+
+	<action-attrs name="action-attrs-createInvoice">
+		<attribute name="value" for="invoiceItems" expr=" eval: _invoiceItems" />
+	</action-attrs>
+
+	<action-method name="action-gst-method-controller-button">
+		<call class="com.axelor.app.gst.web.InvoiceGstController" method="generateReport" />
+	</action-method>
+
+	<action-report name="action-gst-report-form" design="InvoiceReport.rptdesign"
+		output="design-${date}${time}" format="pdf">
+		<param name="ids" expr="eval: id" />
+	</action-report>
+
+	<chart name="unpaid-invoice" title="Unpaid Invoice">
+		<dataset type="sql">
+    	 <![CDATA[
+	         SELECT COUNT(self.party) as party, p.name as name from Gst_Invoice self 
+	         LEFT join Party as p on self.party = p.id 
+	         WHERE
+	    	 (self.status) <> 'paid'
+	    	 AND p.customer = 't'
+	     	 GROUP BY p.name , self.party 
+          ]]>
+  		 </dataset>
+		<category key="name" />
+		<series key="party" type="bar" />
+		<config name="colors" value="red,green,yellow,pink" />
+	</chart>
+
+	<chart name="customer-state" title="Customer state">
+		<dataset type="sql">
+		    <![CDATA[
+		      select  s.name  as name , COUNT(self.customer) as customer  from Gst_party self 
+		      LEFT join Gst_Party_Addresses as ap on self.id = ap.gst_party
+		      LEFT join Gst_Address as a on ap.addresses = a.id 
+		      LEFT join Gst_State as s on a.state = s.id
+		      Where customer= 't'
+		      GROUP BY s.name , self.customer 
+		    ]]>
+  		  </dataset>
+		<category key="name" />
+		<series key="customer" type="pie" />
+		<config name="colors" value="red,green,yellow,pink" />
+	</chart>
+
+	<chart name="paid-invoice" title="Paid Invoice">
+		<dataset type="sql">
+		    <![CDATA[
+		        SELECT COUNT(self.id) as id , p.name as name from Gst_Invoice self 
+		         LEFT join Gst_invoice_invoice_items as ic on self.id = ic.gst_invoice 
+		         LEFT join Gst_invoice_line as il on ic.invoice_items= il.id 
+		         LEFT join Gst_Product as p on  il.product = p.id 
+		         WHERE (self.status) = 'Paid'
+		         GROUP BY p.name , self.id
+			 ]]>
+	    </dataset>
+		<category key="name" />
+		<series key="id" type="pie" />
+		<config name="colors" value="red,green,yellow,pink" />
+	</chart>
+
+	<chart name="invoice-status" title="Invoice Status">
+		<dataset type="sql">
+			 <![CDATA[
+		        SELECT COUNT(self.id) as count ,self.status  as status from Gst_Invoice  self  
+		        GROUP BY  self.id,self.status;
+		      ]]>
+        </dataset>
+		<category key="status" />
+		<series key="count" type="bar" />
+	</chart>
+
+	<custom name="custom-invoice" title="Custom Invoice">
+		<dataset type="sql">
+			<![CDATA[
+				select i.status as status,i.invoicedate,i.invoice_address,i.net_ammount,i.gross_ammount ,p.name as part_name,c.name as company_name
+				from gst_invoice as i	
+				LEFT join Gst_Party as p on i.party = p.id 
+				LEFT join Gst_Company as c on i.company = c.id 
+				Where status = 'validate' AND status <> 'Paid';
+			]]>
+	   </dataset>
+		<template>
+	     <![CDATA[
+	  	   <report-table data='data' columns='status,invoicedate,company_name,part_name,invoice_address,net_ammount,gross_ammount' ></report-table>
+	  	  ]]>
+	</template>
+	</custom>
+</object-views>

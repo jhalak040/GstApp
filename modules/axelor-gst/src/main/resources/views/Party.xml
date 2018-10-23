@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/object-views
+  http://axelor.com/xml/ns/object-views/object-views_5.0.xsd">
+
+	<grid model="com.axelor.gst.db.Party" title="Parties" name="party-grid">
+		<field name="reference" />
+		<field name="name" />
+		<field name="type" />
+		<field name="customer" />
+		<field name="supplier" />
+		<field name="gstin" />
+		<field name="contacts" />
+		<field name="addresses" />
+	</grid>
+
+	<form model="com.axelor.gst.db.Party" title="Party" name="party-form"
+		onNew="action-gst-record-default-type" onSave="action-gst-method-reference-party">
+		<!--onNew="com.axelor.gst.web.GstController:defaultReference" -->
+		<panel css="panel-red">
+			<panel colSpan="12">
+				<field name="reference" colSpan="7" />    <!-- get from sequence on save -->
+				<field name="name" colSpan="7" />
+				<field name="type" colSpan="5" />
+				<field name="customer" />
+				<field name="supplier" />
+				<field name="gstin" colSpan="10" />
+			</panel>
+
+			<panel title="Contact" colSpan="12"> <!-- <on change -->
+				<field name="contacts" widget="editor">
+					<editor x-show-titles="false">
+						<field name="name" />
+						<field name="type"  />
+						<field name="primaryEmail" />
+						<field name="primaryPhone" />
+						<field name="secondaryEmail" />
+						<field name="secondaryPhone" />
+					</editor>
+				</field>
+			</panel>
+
+			<panel title="Address" colSpan="12">
+				<field name="addresses" colSpan="12" css="address-list">
+					<viewer><![CDATA[
+					        <address>
+					        {{record.type}}
+					        {{record.line1}} {{record.line2}}<br>
+					        {{record.city1.name}}, {{record.state.name}} - {{record.pinCode}}<br>
+					        {{record.country.name}}
+					        </address>
+					        ]]>
+			       </viewer>
+					<editor x-show-titles="false">
+						<field name="type" colSpan="4" />
+						<field name="line1" colSpan="12" />
+						<field name="line2" colSpan="12" />
+						<field name="city1" colSpan="4" />
+						<field name="state" colSpan="4" />
+						<field name="pinCode" colSpan="4" />
+						<field name="country" widget="SuggestBox" colSpan="12" />
+					</editor>
+				</field>
+			</panel>
+		</panel>
+	</form>
+
+	<cards name="party-card" title="Parties" model="com.axelor.gst.db.Party">
+		<field name="reference" />
+		<field name="name" />
+		<field name="type" />
+		<field name="customer" />
+		<field name="supplier" />
+		<field name="gstin" />
+		<field name="contacts" />
+		<field name="addresses" />
+		<template><![CDATA[  
+			   <div class="span8">
+					<strong> {{reference}}   {{name}} <br> {{type}} </strong><br>
+					<span ng-if="customer">{{customer}}</span><br>
+					<span ng-if="supplier">{{supplier}}</span><br>
+					<span ng-if="gstin">{{gstin}} </span>
+				</div>
+		
+		        <div class="span8">
+				   <contacts>
+						<strong> {{contacts.name}}  </strong>
+						<span ng-if="Contacts.type.Secondary">-{{Contacts.SecondaryPhone}}<Br> {{Contacts.SecondaryEmail}}</span> 
+					    <span ng-if="Contacts.type.Primary">- {{Contacts.primaryEmail}}<Br> {{Contacts.primaryEmail}}</span> 
+					 </contacts>
+				</div>
+							 
+				<div class="span8">
+			    	<addresses>
+						 <strong>{{addresses.line1}} </strong>
+						 <span ng-if="addresses.line2">-{{addresses.line2}}</span> 
+						 <strong> {{addresses.city1.name}}<br>{{addresses.state.name}}  {{address.country.name}}</strong>
+					     <span ng-if="addresses.pinCode">-{{addresses.pinCode}}</span> 
+				   </addresses>
+				</div>
+		]]>
+		</template>
+	</cards>
+
+	<action-record name="action-gst-record-default-type"
+		model="com.axelor.gst.db.Party">
+		<field name="type" expr="Company" />
+	</action-record>
+
+	<action-method name="action-gst-method-reference-party">
+		<call class="com.axelor.app.gst.web.GstController" method="referenceForParty" />
+	</action-method>
+
+	<!-- <action-attrs name="action-gst-attrs-contact-type"> <attribute name="hidden" 
+		for="primaryEmail,primaryPhone" expr="type== 'Secondary'" /> <attribute name="hidden" 
+		for="secondaryEmail,secondaryPhone" expr="type== 'Primary'" /> </action-attrs> 
+		<selection name="contact.type.selection"> <option value="Primary">Primary</option> 
+		<option value="Secondary">Secondary</option> <option value="Other">Other</option> 
+		</selection> <selection name="address.type.selection"> <option value="Default">Default</option> 
+		<option value="Invoice">Invoice</option> <option value="Shipping">Shipping</option> 
+		<option value="Other">Other</option> </selection> <selection name="party.type.selection"> 
+		<option value="Individual">Individual</option> <option value="Company">Company</option> 
+		</selection> -->
+</object-views>
+

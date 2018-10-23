@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/object-views
+  http://axelor.com/xml/ns/object-views/object-views_5.0.xsd">
+
+	<grid model="com.axelor.gst.db.Company" title="Company" name="company-grid">
+		<field name="name" />
+		<field name="gstin" />
+		<field name="contact" />
+		<field name="bankdetails" />
+		<field name="addresses" />
+	</grid>
+
+	<form model="com.axelor.gst.db.Company" title="Company" name="company-form">
+		<panel colSpan="20">
+			<panel colSpan="12">
+				<field name="image" showTitle="false" colSpan="12" widget="image" />
+				<field name="name" />
+			</panel>
+			<field name="gstin" />
+			<field name="contact" colSpan="15" />
+			<field name="bankdetails" colSpan="15" />
+			<field name="addresses" colSpan="12" css="address-list">
+				<viewer><![CDATA[
+			        <address>
+			        {{record.type}}
+			        {{record.line1}} {{record.line2}}<br>
+			        {{record.city1.name}}  {{record.state.name}} {{record.pinCode}}<br>
+			        {{record.country.name}}
+			        </address>
+			        ]]>
+			    </viewer>
+				<editor x-show-titles="false">
+					<field name="type" colSpan="4" />
+					<field name="line1" colSpan="12" />
+					<field name="line2" colSpan="12" />
+					<field name="city1" colSpan="4" />
+					<field name="state" colSpan="4" />
+					<field name="pinCode" colSpan="4" />
+					<field name="country" widget="SuggestBox" colSpan="12" />
+				</editor>
+			</field>
+		</panel>
+	</form>
+</object-views>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/object-views
+  http://axelor.com/xml/ns/object-views/object-views_5.0.xsd">
+
+	<grid model="com.axelor.gst.db.BankAccount" title="Bank Account"
+		name="bank-account-grid">
+		<field name="bank" />
+		<field name="accountNumber" />
+		<field name="ifsc" />
+		<field name="type" />
+		<field name="address" widget="text" />
+	</grid>
+
+	<selection name="bank-account.type.selection">
+		<option value="Saving">Saving</option>
+		<option value="Current">Current</option>
+	</selection>
+
+	<form model="com.axelor.gst.db.BankAccount" title="Bank Account"
+		name="bank-account-form" onNew="action-gst-record-account-Type">
+		<panel>
+			<field name="bank" />
+			<field name="accountNumber" />
+			<field name="ifsc" />
+			<field name="type" />
+			<field name="address" widget="text" />
+		</panel>
+	</form>
+	<!-- action-gst-record-type -->
+	<action-record name="action-gst-record-account-Type"
+		model="com.axelor.gst.db.BankAccount">
+		<field name="type" expr="Current" />
+	</action-record>
+
+</object-views>

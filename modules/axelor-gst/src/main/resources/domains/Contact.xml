@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<domain-models xmlns="http://axelor.com/xml/ns/domain-models"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/domain-models
+  http://axelor.com/xml/ns/domain-models/domain-models_5.0.xsd">
+
+	<module name="gst" package="com.axelor.gst.db" />
+
+	<entity name="Contact" cachable="true">
+		<string name="name" title="Name" initParam="true" />
+		<string name="type" title="Type" selection="contact.type.selection" />
+		<string name="primaryEmail" title="Primary Email" />
+		<string name="secondaryEmail" title="Secondary Email" />
+		<string name="primaryPhone" title="Primary Phone" />
+		<string name="secondaryPhone" title="Secondary Phone" />
+		<string name="otherEmail" title="Other Email" />
+		<string name="otherPhone" title=" Other Phone" />
+		<extra-code>
+   		<![CDATA[
+            // TYPE   
+			public static final String CONTACT_TYPE_PRIMARY = "Primary";
+			public static final String CONTACT_TYPE_SECONDARY = "Secondary";
+			public static final String CONTACT_TYPE_OTHERS = "Others";
+				
+   		]]>
+    	</extra-code>
+	</entity>
+
+</domain-models>

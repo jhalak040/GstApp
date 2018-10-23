@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain-models xmlns="http://axelor.com/xml/ns/domain-models"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://axelor.com/xml/ns/domain-models
+  http://axelor.com/xml/ns/domain-models/domain-models_5.0.xsd">
+
+	<module name="gst" package="com.axelor.gst.db" />
+	<!-- <enum name="Type"> <item name="SAVING" value="saving" /> <item name="CURRENT" 
+		value="current" /> </enum> -->
+	<entity name="BankAccount">
+		<string name="bank" title="Bank" required="true"/>
+		<string name="accountNumber" title="Account Number" required="true"/>
+		<string name="ifsc" title="IFSC" required="true"/>
+		<string name="type" title="Type" selection="bank.account.type.selection"
+			default="saving" />
+		<string name="address" title="Address"/>
+	</entity>
+</domain-models>
